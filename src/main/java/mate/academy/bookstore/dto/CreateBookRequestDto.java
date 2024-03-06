@@ -25,5 +25,4 @@ public class CreateBookRequestDto {
     @Size(min = MIN_DESCRIPTION_LENGTH)
     private String description;
     private String coverImage;
-
 }
