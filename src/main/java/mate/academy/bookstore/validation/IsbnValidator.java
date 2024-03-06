@@ -18,5 +18,6 @@ public class IsbnValidator implements ConstraintValidator<Isbn, String> {
     public boolean isValid(String isbn, ConstraintValidatorContext constraintValidatorContext) {
         return isbn != null && Pattern.matches(ISBN10_FORMAT, isbn)
                 || Pattern.matches(ISBN13_FORMAT, isbn);
+
     }
 }
