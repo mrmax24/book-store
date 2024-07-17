@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import mate.academy.bookstore.dto.user.UserRegistrationRequestDto;
 import mate.academy.bookstore.dto.user.UserResponseDto;
 import mate.academy.bookstore.exception.RegistrationException;
-import mate.academy.bookstore.service.UserService;
+import mate.academy.bookstore.service.RegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-    private final UserService userService;
+    private final RegistrationService registrationService;
 
     @Operation(summary = "Register a new user", description = "Register a new user")
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto request)
             throws RegistrationException {
-        return userService.registerUser(request);
+        return registrationService.registerUser(request);
     }
 }

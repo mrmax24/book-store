@@ -20,9 +20,16 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    private static final String TIMESTAMP = "timestamp";
-    private static final String STATUS = "status";
-    private static final String ERRORS = "errors";
+    private static final String TIMESTAMP_LABEL = "timestamp";
+    private static final String STATUS_LABEL = "status";
+    private static final String ERRORS_LABEL = "errors";
+    private static final String ERROR_LABEL = "error";
+    private static final String MESSAGE_LABEL = "message";
+    private static final String FIELD_LABEL = "' field ";
+    private static final String DELIMITER_LABEL = "'";
+    private static final String REPLACEMENT_LABEL = "$1 $2";
+    private static final String REGISTRATION_ERROR_MESSAGE = "Registration error";
+    private static final String ENTITY_NOT_FOUND_ERROR_MESSAGE = "Entity not found error";
     private static final DateTimeFormatter FORMATTER
             = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -34,14 +41,14 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             WebRequest request
     ) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now().format(FORMATTER));
-        body.put("status", HttpStatus.BAD_REQUEST);
+        body.put(TIMESTAMP_LABEL, LocalDateTime.now().format(FORMATTER));
+        body.put(STATUS_LABEL, HttpStatus.BAD_REQUEST);
 
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(this::getErrorMessageForArgumentNotValid)
                 .toList();
 
-        body.put("errors", List.of(errors));
+        body.put(ERRORS_LABEL, List.of(errors));
         return new ResponseEntity<>(body, headers, status);
     }
 
@@ -49,10 +56,10 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     protected ResponseEntity<Object> handleAuthenticationException(
             RegistrationException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now().format(FORMATTER));
-        body.put("status", HttpStatus.BAD_REQUEST);
-        body.put("error", "Registration error");
-        body.put("message", ex.getMessage());
+        body.put(TIMESTAMP_LABEL, LocalDateTime.now().format(FORMATTER));
+        body.put(STATUS_LABEL, HttpStatus.BAD_REQUEST);
+        body.put(ERROR_LABEL, REGISTRATION_ERROR_MESSAGE);
+        body.put(MESSAGE_LABEL, ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -60,10 +67,10 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     protected ResponseEntity<Object> handleEntityNotFoundException(
             EntityNotFoundException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now().format(FORMATTER));
-        body.put("status", HttpStatus.NOT_FOUND);
-        body.put("error", "EntityNotFound error");
-        body.put("message", ex.getMessage());
+        body.put(TIMESTAMP_LABEL, LocalDateTime.now().format(FORMATTER));
+        body.put(STATUS_LABEL, HttpStatus.NOT_FOUND);
+        body.put(ERROR_LABEL, ENTITY_NOT_FOUND_ERROR_MESSAGE);
+        body.put(MESSAGE_LABEL, ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
@@ -71,8 +78,8 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         if (e instanceof FieldError) {
             String field = ((FieldError) e).getField();
             String formattedField = StringUtils.capitalize(
-                    field.replaceAll("(\\p{Ll})(\\p{Lu})", "$1 $2"));
-            return "'" + formattedField + "' field " + e.getDefaultMessage();
+                    field.replaceAll("(\\p{Ll})(\\p{Lu})", REPLACEMENT_LABEL));
+            return DELIMITER_LABEL + formattedField + FIELD_LABEL + e.getDefaultMessage();
         }
         return e.getDefaultMessage();
     }
