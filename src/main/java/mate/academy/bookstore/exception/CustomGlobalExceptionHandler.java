@@ -60,7 +60,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         body.put(STATUS_LABEL, HttpStatus.BAD_REQUEST);
         body.put(ERROR_LABEL, REGISTRATION_ERROR_MESSAGE);
         body.put(MESSAGE_LABEL, ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

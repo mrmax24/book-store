@@ -2,8 +2,8 @@ package mate.academy.bookstore.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.lang.reflect.Field;
 import java.util.Objects;
+import org.springframework.beans.BeanWrapperImpl;
 
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
     private String password;
@@ -17,16 +17,8 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
-        try {
-            Field passwordField = value.getClass().getDeclaredField(password);
-            passwordField.setAccessible(true);
-            Object passwordValue = passwordField.get(value);
-            Field repeatPasswordField = value.getClass().getDeclaredField(repeatPassword);
-            repeatPasswordField.setAccessible(true);
-            Object repeatPasswordValue = repeatPasswordField.get(value);
-            return Objects.equals(passwordValue, repeatPasswordValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("Error accessing fields", e);
-        }
+        Object field = new BeanWrapperImpl(value).getPropertyValue(this.password);
+        Object fieldMatch = new BeanWrapperImpl(value).getPropertyValue(this.repeatPassword);
+        return Objects.equals(field, fieldMatch);
     }
 }

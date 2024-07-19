@@ -18,7 +18,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public UserResponseDto registerUser(UserRegistrationRequestDto requestDto) {
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RegistrationException("Can't register user with email "
                     + requestDto.getEmail());
         }
