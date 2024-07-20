@@ -23,7 +23,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                     + requestDto.getEmail());
         }
         User user = userMapper.toModel(requestDto);
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+        userRepository.save(user);
+        return userMapper.toDto(user);
     }
 }
